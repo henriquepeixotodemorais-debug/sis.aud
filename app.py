@@ -34,7 +34,7 @@ if password:
     st.cache_data.clear()
 
 # ---------------------------------------------------------
-# FUNÇÃO PARA CARREGAR CSV DO GITHUB (TTL=1)
+# FUNÇÃO PARA CARREGAR CSV DO GITHUB (ACEITA , E ;)
 # ---------------------------------------------------------
 @st.cache_data(ttl=1)
 def load_csv_from_github():
@@ -44,13 +44,15 @@ def load_csv_from_github():
         st.stop()
 
     text = response.text
-    clean_file = io.StringIO(text)
 
+    # Detecta automaticamente o separador
     try:
-        df = pd.read_csv(clean_file, dtype=str, sep=",")
+        df = pd.read_csv(io.StringIO(text), dtype=str, sep=None, engine="python")
     except:
-        clean_file = io.StringIO(text)
-        df = pd.read_csv(clean_file, dtype=str, sep=";")
+        try:
+            df = pd.read_csv(io.StringIO(text), dtype=str, sep=",")
+        except:
+            df = pd.read_csv(io.StringIO(text), dtype=str, sep=";")
 
     return df.fillna("")
 
@@ -125,7 +127,9 @@ df = load_csv_from_github()
 # ---------------------------------------------------------
 # PREPARAÇÃO DOS DADOS
 # ---------------------------------------------------------
-df["dia"] = pd.to_datetime(df["data e horário"]).dt.strftime("%d/%m/%y")
+df["data e horário"] = pd.to_datetime(df["data e horário"], dayfirst=True)
+df["dia"] = df["data e horário"].dt.strftime("%d/%m/%y")
+
 df = df.sort_values(["dia", "sala de audiência", "data e horário"])
 
 # ---------------------------------------------------------
@@ -150,7 +154,7 @@ def render_process_box(process_df, show_sensitive=False):
     row0 = process_df.iloc[0]
 
     with st.container(border=True):
-        st.markdown(f"### ⏰ {row0['data e horário']}")
+        st.markdown(f"### ⏰ {row0['data e horário'].strftime('%d/%m/%Y %H:%M')}")
         st.markdown(f"**Processo:** {row0['número do processo relacionado']}")
         st.markdown(f"**Tipo:** {row0['parte a ser ouvida ou tipo de processo']}")
         st.markdown(f"[🔗 Link do processo]({row0['link do processo']})")
