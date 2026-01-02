@@ -55,40 +55,52 @@ def load_csv_from_github():
     return df.fillna("")
 
 # ---------------------------------------------------------
-# FUNÇÃO PARA FAZER UPLOAD DO CSV PARA O GITHUB (CORRIGIDA)
+# FUNÇÃO DE UPLOAD À PROVA DE ERRO 409 (CONFLICT)
 # ---------------------------------------------------------
 def upload_csv_to_github(uploaded_file):
 
     content = uploaded_file.getvalue()
     encoded = base64.b64encode(content).decode()
 
-    # Tenta obter o SHA do arquivo existente
-    response = requests.get(API_URL, headers={"Authorization": f"token {GITHUB_TOKEN}"})
-
-    if response.status_code == 200:
-        sha = response.json().get("sha")
-    else:
-        sha = None  # arquivo não existe → criar novo
-
-    data = {
-        "message": "Atualização automática do CSV via Streamlit",
-        "content": encoded,
-        "branch": "main"
-    }
-
-    if sha:
-        data["sha"] = sha  # só envia sha se existir
-
     headers = {"Authorization": f"token {GITHUB_TOKEN}"}
 
-    put_response = requests.put(API_URL, json=data, headers=headers)
+    # 1. Buscar SHA atual
+    def get_sha():
+        r = requests.get(API_URL, headers=headers)
+        if r.status_code == 200:
+            return r.json().get("sha")
+        return None
 
-    if put_response.status_code in [200, 201]:
+    sha = get_sha()
+
+    # 2. Montar payload
+    def make_payload(sha_value):
+        payload = {
+            "message": "Atualização automática do CSV via Streamlit",
+            "content": encoded,
+            "branch": "main"
+        }
+        if sha_value:
+            payload["sha"] = sha_value
+        return payload
+
+    # 3. Tentar enviar
+    payload = make_payload(sha)
+    response = requests.put(API_URL, json=payload, headers=headers)
+
+    # 4. Se der erro 409, buscar SHA de novo e tentar novamente
+    if response.status_code == 409:
+        new_sha = get_sha()
+        payload = make_payload(new_sha)
+        response = requests.put(API_URL, json=payload, headers=headers)
+
+    # 5. Resultado final
+    if response.status_code in [200, 201]:
         st.success("CSV atualizado com sucesso no GitHub! Recarregando...")
         st.cache_data.clear()
         st.rerun()
     else:
-        st.error(f"Erro ao enviar arquivo: {put_response.text}")
+        st.error(f"Erro ao enviar arquivo: {response.text}")
 
 # ---------------------------------------------------------
 # MODO sisbase — APENAS UPLOAD DO CSV
