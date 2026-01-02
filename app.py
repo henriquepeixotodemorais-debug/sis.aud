@@ -34,7 +34,7 @@ if password:
     st.cache_data.clear()
 
 # ---------------------------------------------------------
-# FUNÇÃO PARA CARREGAR CSV DO GITHUB (TTL=1)
+# FUNÇÃO PARA CARREGAR CSV DO GITHUB (ACEITA , E ;)
 # ---------------------------------------------------------
 @st.cache_data(ttl=1)
 def load_csv_from_github():
@@ -44,13 +44,15 @@ def load_csv_from_github():
         st.stop()
 
     text = response.text
-    clean_file = io.StringIO(text)
 
+    # Tenta detectar automaticamente o separador
     try:
-        df = pd.read_csv(clean_file, dtype=str, sep=",")
+        df = pd.read_csv(io.StringIO(text), dtype=str, sep=None, engine="python")
     except:
-        clean_file = io.StringIO(text)
-        df = pd.read_csv(clean_file, dtype=str, sep=";")
+        try:
+            df = pd.read_csv(io.StringIO(text), dtype=str, sep=",")
+        except:
+            df = pd.read_csv(io.StringIO(text), dtype=str, sep=";")
 
     return df.fillna("")
 
