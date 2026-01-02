@@ -47,33 +47,40 @@ def load_csv_from_github():
     return df.fillna("")
 
 # ---------------------------------------------------------
-# FUNÇÃO PARA FAZER UPLOAD DO CSV PARA O GITHUB
+# FUNÇÃO PARA FAZER UPLOAD DO CSV PARA O GITHUB (CORRIGIDA)
 # ---------------------------------------------------------
 def upload_csv_to_github(uploaded_file):
 
     content = uploaded_file.getvalue()
     encoded = base64.b64encode(content).decode()
 
-    current = requests.get(API_URL).json()
-    sha = current.get("sha", None)
+    # Tenta obter o SHA do arquivo existente
+    response = requests.get(API_URL, headers={"Authorization": f"token {GITHUB_TOKEN}"})
+
+    if response.status_code == 200:
+        sha = response.json().get("sha")
+    else:
+        sha = None  # arquivo não existe → criar novo
 
     data = {
         "message": "Atualização automática do CSV via Streamlit",
         "content": encoded,
-        "sha": sha,
         "branch": "main"
     }
 
+    if sha:
+        data["sha"] = sha  # só envia sha se existir
+
     headers = {"Authorization": f"token {GITHUB_TOKEN}"}
 
-    response = requests.put(API_URL, json=data, headers=headers)
+    put_response = requests.put(API_URL, json=data, headers=headers)
 
-    if response.status_code in [200, 201]:
+    if put_response.status_code in [200, 201]:
         st.success("CSV atualizado com sucesso no GitHub! Recarregando...")
         st.cache_data.clear()
         st.rerun()
     else:
-        st.error(f"Erro ao enviar arquivo: {response.text}")
+        st.error(f"Erro ao enviar arquivo: {put_response.text}")
 
 # ---------------------------------------------------------
 # FUNÇÃO PARA MONTAR O BOX DE CADA PROCESSO
