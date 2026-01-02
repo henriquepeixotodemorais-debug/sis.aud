@@ -1,11 +1,13 @@
-data e horário,sala de audiência,número do processo relacionado,parte a ser ouvida ou tipo de processo,telefone da parte,estado da intimação,link do processo,dimensão da audiência,resumo dos fatos
-2026-01-10 09:00,Sala 1,0001234-56.2026.8.07.0001,Autor: João Silva,61999990001,Intimado,https://processo1.com,Virtual,"Discussão sobre contrato de prestação de serviços."
-2026-01-10 09:00,Sala 1,0001234-56.2026.8.07.0001,Réu: Maria Souza,61988880002,Intimada,https://processo1.com,Virtual,"Discussão sobre contrato de prestação de serviços."
-2026-01-10 10:30,Sala 1,0005678-90.2026.8.07.0001,Autor: Carlos Pereira,61977770003,Intimado,https://processo2.com,Presencial,"Ação de cobrança referente a serviços não pagos."
-2026-01-10 10:30,Sala 1,0005678-90.2026.8.07.0001,Réu: Ana Lima,61966660004,Intimada,https://processo2.com,Presencial,"Ação de cobrança referente a serviços não pagos."
-2026-01-10 14:00,Sala 2,0009999-11.2026.8.07.0001,Autor: Pedro Gomes,61955550005,Intimado,https://processo3.com,Virtual,"Conflito envolvendo contrato de locação."
-2026-01-10 14:00,Sala 2,0009999-11.2026.8.07.0001,Réu: Carla Dias,61944440006,Intimada,https://processo3.com,Virtual,"Conflito envolvendo contrato de locação."
-2026-01-10 15:30,Sala 2,0002222-33.2026.8.07.0001,Autor: Bruno Costa,61933330007,Intimado,https://processo4.com,Presencial,"Ação de indenização por danos materiais."
-2026-01-10 15:30,Sala 2,0002222-33.2026.8.07.0001,Réu: Fernanda Alves,61922220008,Intimada,https://processo4.com,Presencial,"Ação de indenização por danos materiais."
-2026-01-10 16:45,Sala 2,0004444-55.2026.8.07.0001,Autor: Lucas Martins,61911110009,Intimado,https://processo5.com,Virtual,"Discussão sobre responsabilidade civil."
-2026-01-10 16:45,Sala 2,0004444-55.2026.8.07.0001,Réu: Patrícia Rocha,61900000010,Intimada,https://processo5.com,Virtual,"Discussão sobre responsabilidade civil."
+sala de audiência,data e horário,número do processo relacionado,parte a ser ouvida ou tipo de processo,link do processo,resumo dos fatos,telefone da parte,estado da intimação,dimensão da audiência
+1,2026-01-10 08:00,0001234-56.2025.8.07.0001,Ação de Alimentos,https://processo.exemplo/0001234,"A autora pleiteia pensão alimentícia para o menor.",,,Presencial
+1,2026-01-10 08:00,0001234-56.2025.8.07.0001,Maria Silva,https://processo.exemplo/0001234,"",61999990001,Intimada,Presencial
+1,2026-01-10 08:00,0001234-56.2025.8.07.0001,João Pereira,https://processo.exemplo/0001234,"",61988880002,Pendente,Presencial
+
+1,2026-01-10 09:00,0005678-90.2025.8.07.0001,Divórcio Litigioso,https://processo.exemplo/0005678,"Discussão sobre guarda compartilhada e divisão de bens.",,,Virtual
+1,2026-01-10 09:00,0005678-90.2025.8.07.0001,Ana Costa,https://processo.exemplo/0005678,"",61977770003,Intimada,Virtual
+1,2026-01-10 09:00,0005678-90.2025.8.07.0001,Carlos Costa,https://processo.exemplo/0005678,"",61966660004,Intimada,Virtual
+
+2,2026-01-10 08:30,0011111-22.2025.8.07.0001,Investigação de Paternidade,https://processo.exemplo/0011111,"A autora busca reconhecimento de paternidade e exame de DNA.",,,Presencial
+2,2026-01-10 08:30,0011111-22.2025.8.07.0001,Laura Mendes,https://processo.exemplo/0011111,"",61955550005,Intimada,Presencial
+2,2026-01-10 08:30,0011111-22.2025.8.07.0001,Pedro Almeida,https://processo.exemplo/0011111,"",61944440006,Pendente,Presencial
+
