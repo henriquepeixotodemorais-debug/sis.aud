@@ -69,9 +69,9 @@ def upload_csv_to_github(uploaded_file):
     response = requests.put(API_URL, json=data, headers=headers)
 
     if response.status_code in [200, 201]:
-        st.success("CSV atualizado com sucesso no GitHub!")
+        st.success("CSV atualizado com sucesso no GitHub! Recarregando...")
         st.cache_data.clear()
-        st.experimental_rerun()
+        st.rerun()
     else:
         st.error(f"Erro ao enviar arquivo: {response.text}")
 
