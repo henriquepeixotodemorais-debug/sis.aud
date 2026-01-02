@@ -26,9 +26,17 @@ RAW_URL = f"https://raw.githubusercontent.com/{GITHUB_USER}/{GITHUB_REPO}/main/{
 API_URL = f"https://api.github.com/repos/{GITHUB_USER}/{GITHUB_REPO}/contents/{GITHUB_FILE}"
 
 # ---------------------------------------------------------
-# FUNÇÃO PARA CARREGAR CSV DO GITHUB
+# LIMPA CACHE AO DIGITAR QUALQUER SENHA
 # ---------------------------------------------------------
-@st.cache_data
+password = st.text_input("Insira a chave de acesso", type="password")
+
+if password:
+    st.cache_data.clear()
+
+# ---------------------------------------------------------
+# FUNÇÃO PARA CARREGAR CSV DO GITHUB (TTL=1)
+# ---------------------------------------------------------
+@st.cache_data(ttl=1)
 def load_csv_from_github():
     response = requests.get(RAW_URL)
     if response.status_code != 200:
@@ -83,50 +91,6 @@ def upload_csv_to_github(uploaded_file):
         st.error(f"Erro ao enviar arquivo: {put_response.text}")
 
 # ---------------------------------------------------------
-# FUNÇÃO PARA MONTAR O BOX DE CADA PROCESSO
-# ---------------------------------------------------------
-def render_process_box(process_df, show_sensitive=False):
-    row0 = process_df.iloc[0]
-
-    with st.container(border=True):
-        st.markdown(f"### ⏰ {row0['data e horário']}")
-        st.markdown(f"**Processo:** {row0['número do processo relacionado']}")
-        st.markdown(f"**Tipo:** {row0['parte a ser ouvida ou tipo de processo']}")
-        st.markdown(f"[🔗 Link do processo]({row0['link do processo']})")
-        st.markdown(f"**Dimensão:** {row0['dimensão da audiência']}")
-
-        with st.expander("Resumo dos fatos"):
-            st.write(row0["resumo dos fatos"])
-
-        if show_sensitive:
-            st.markdown("#### Partes:")
-
-            for _, r in process_df.iloc[1:].iterrows():
-                parte = r["parte a ser ouvida ou tipo de processo"]
-                telefone = r["telefone da parte"]
-                intimacao = r["estado da intimação"]
-
-                st.markdown(
-                    f"""
-                    <div style="margin-bottom:10px;">
-                        <div style="font-weight:700; font-size:16px;">• {parte}</div>
-                        <div style="margin-left:20px; font-size:14px; color:#444;">
-                            Telefone: {telefone}<br>
-                            Intimação: {intimacao}
-                        </div>
-                    </div>
-                    """,
-                    unsafe_allow_html=True
-                )
-
-# ---------------------------------------------------------
-# INTERFACE PRINCIPAL
-# ---------------------------------------------------------
-st.title("📅 Sistema de Audiências")
-
-password = st.text_input("Insira a chave de acesso", type="password")
-
-# ---------------------------------------------------------
 # MODO sisbase — APENAS UPLOAD DO CSV
 # ---------------------------------------------------------
 if password == "sisbase":
@@ -166,6 +130,43 @@ salas_selecionadas = st.multiselect(
 if len(salas_selecionadas) == 0:
     st.warning("Selecione ao menos uma sala.")
     st.stop()
+
+# ---------------------------------------------------------
+# FUNÇÃO PARA MONTAR O BOX DE CADA PROCESSO
+# ---------------------------------------------------------
+def render_process_box(process_df, show_sensitive=False):
+    row0 = process_df.iloc[0]
+
+    with st.container(border=True):
+        st.markdown(f"### ⏰ {row0['data e horário']}")
+        st.markdown(f"**Processo:** {row0['número do processo relacionado']}")
+        st.markdown(f"**Tipo:** {row0['parte a ser ouvida ou tipo de processo']}")
+        st.markdown(f"[🔗 Link do processo]({row0['link do processo']})")
+        st.markdown(f"**Dimensão:** {row0['dimensão da audiência']}")
+
+        with st.expander("Resumo dos fatos"):
+            st.write(row0["resumo dos fatos"])
+
+        if show_sensitive:
+            st.markdown("#### Partes:")
+
+            for _, r in process_df.iloc[1:].iterrows():
+                parte = r["parte a ser ouvida ou tipo de processo"]
+                telefone = r["telefone da parte"]
+                intimacao = r["estado da intimação"]
+
+                st.markdown(
+                    f"""
+                    <div style="margin-bottom:10px;">
+                        <div style="font-weight:700; font-size:16px;">• {parte}</div>
+                        <div style="margin-left:20px; font-size:14px; color:#444;">
+                            Telefone: {telefone}<br>
+                            Intimação: {intimacao}
+                        </div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
 
 # ---------------------------------------------------------
 # RENDERIZAÇÃO POR DIA E SALA
